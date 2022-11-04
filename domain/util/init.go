@@ -15,5 +15,9 @@ func SendError(res http.ResponseWriter, err *HttpError) {
 	res.Header().Set("Content-Type", "application/json; charset=utf-8")
 	res.Header().Set("X-Content-Type-Options", "nosniff")
 	res.WriteHeader(err.Code)
-	json.NewEncoder(res).Encode(err)
+
+	encodeErr := json.NewEncoder(res).Encode(err)
+	if encodeErr != nil {
+		panic(encodeErr)
+	}
 }

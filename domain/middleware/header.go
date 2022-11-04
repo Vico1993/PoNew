@@ -24,7 +24,7 @@ func CheckRequest(next http.Handler) http.Handler {
 				continue
 			}
 
-			if notif.ValidHeader(req) == false {
+			if !notif.ValidHeader(req) {
 				myUtil.SendError(res, myUtil.NewValidationError("Missing key for: "+notif.GetType()+", you need to provide: "+strings.Join(notif.HeaderKeys(), ", ")))
 				return
 			}
