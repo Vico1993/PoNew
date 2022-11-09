@@ -1,6 +1,7 @@
 package notification
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -35,4 +36,11 @@ func (t *Telegram) ValidHeader(req *http.Request) bool {
 	}
 
 	return true
+}
+
+// Processing the notification
+func (t *Telegram) Process(req *http.Request, res http.ResponseWriter) {
+	fmt.Println("Processing ...")
+
+	fmt.Println(req.FormValue("type"))
 }

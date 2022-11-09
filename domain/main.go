@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Vico1993/Ponew/domain/middleware"
+	"github.com/Vico1993/Ponew/domain/handler"
 	"github.com/Vico1993/Ponew/domain/notification"
 	"github.com/gorilla/mux"
 )
@@ -16,13 +16,15 @@ func main() {
 	notification.InitNotification()
 
 	router := mux.NewRouter()
+	router.HandleFunc("/notifications/{type}", handler.PostNotification).Methods("POST")
+
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "Hello World")
 	}).Methods("GET")
 
 	// Check header middleware
-	router.Use(middleware.CheckRequest)
+	// router.Use(middleware.CheckRequest)
 
 	srv := &http.Server{
 		Handler:      router,

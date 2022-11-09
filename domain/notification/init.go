@@ -6,6 +6,7 @@ type Notification interface {
 	HeaderKeys() []string
 	GetType() string
 	ValidHeader(req *http.Request) bool
+	Process(req *http.Request, res http.ResponseWriter)
 }
 
 type baseNotification struct {
