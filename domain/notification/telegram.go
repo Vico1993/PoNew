@@ -14,6 +14,8 @@ import (
 // telegram-chatId <- Chat ID where to send the notification
 // telegram-token <- bot token
 
+var TelegramBaseURL = "https://api.telegram.org/bot<TOKEN>/sendMessage"
+
 type Telegram struct {
 	baseNotification
 }
@@ -21,6 +23,7 @@ type Telegram struct {
 type TelegramBody struct {
 	TelegramChatId string `json:"telegram-chatId"`
 	TelegramToken  string `json:"telegram-token"`
+	Text           string `json:"text"`
 }
 
 // List of the keys required by the Notification
@@ -28,6 +31,7 @@ func (t *Telegram) BodyKeys() []string {
 	return []string{
 		"telegram-chatId",
 		"telegram-token",
+		"text",
 	}
 }
 
@@ -42,11 +46,16 @@ func (t *Telegram) Process(req *http.Request, res http.ResponseWriter) {
 	err := json.NewDecoder(req.Body).Decode(&body)
 
 	// Valid the body
-	if err != nil || body.TelegramChatId == "" || body.TelegramToken == "" {
+	if err != nil || body.TelegramChatId == "" || body.TelegramToken == "" || body.Text == "" {
 		myUtil.SendError(res, myUtil.NewValidationError("Keys incomplete or incorrect for Telegram Notification, make sure body contains: "+strings.Join(t.BodyKeys(), ", ")))
 		return
 	}
 
-	fmt.Println("Valide BODY de ouf!", body, body.TelegramChatId, body.TelegramToken)
+	url := strings.Replace(TelegramBaseURL, "<TOKEN>", body.TelegramToken, 1)
+	response, err := http.Post(url+"?chat_id="+body.TelegramChatId+"&text="+body.Text, "", nil)
+	if err != nil {
+		panic(err)
+	}
 
+	fmt.Println(response)
 }
