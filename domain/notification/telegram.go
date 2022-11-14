@@ -1,24 +1,33 @@
 package notification
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
+
+	myUtil "github.com/Vico1993/Ponew/domain/util"
 )
 
 // Looking for:
-// x-ponew-type <- telegram
-// x-ponew-telegram-chatId <- Chat ID where to send the notification
-// x-ponew-telegram-token <- bot token
+// type <- telegram
+// telegram-chatId <- Chat ID where to send the notification
+// telegram-token <- bot token
 
 type Telegram struct {
 	baseNotification
 }
 
+type TelegramBody struct {
+	TelegramChatId string `json:"telegram-chatId"`
+	TelegramToken  string `json:"telegram-token"`
+}
+
 // List of the keys required by the Notification
-func (t *Telegram) HeaderKeys() []string {
+func (t *Telegram) BodyKeys() []string {
 	return []string{
-		"x-ponew-telegram-chatId",
-		"x-ponew-telegram-token",
+		"telegram-chatId",
+		"telegram-token",
 	}
 }
 
@@ -27,20 +36,17 @@ func (t *Telegram) GetType() string {
 	return t.baseNotification.notifType
 }
 
-// Valid the header keys needed for the Telegram notification
-func (t *Telegram) ValidHeader(req *http.Request) bool {
-	for _, key := range t.HeaderKeys() {
-		if req.Header.Get(key) == "" {
-			return false
-		}
-	}
-
-	return true
-}
-
 // Processing the notification
 func (t *Telegram) Process(req *http.Request, res http.ResponseWriter) {
-	fmt.Println("Processing ...")
+	var body TelegramBody
+	err := json.NewDecoder(req.Body).Decode(&body)
 
-	fmt.Println(req.FormValue("type"))
+	// Valid the body
+	if err != nil || body.TelegramChatId == "" || body.TelegramToken == "" {
+		myUtil.SendError(res, myUtil.NewValidationError("Keys incomplete or incorrect for Telegram Notification, make sure body contains: "+strings.Join(t.BodyKeys(), ", ")))
+		return
+	}
+
+	fmt.Println("Valide BODY de ouf!", body, body.TelegramChatId, body.TelegramToken)
+
 }

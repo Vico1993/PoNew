@@ -3,9 +3,8 @@ package notification
 import "net/http"
 
 type Notification interface {
-	HeaderKeys() []string
+	BodyKeys() []string
 	GetType() string
-	ValidHeader(req *http.Request) bool
 	Process(req *http.Request, res http.ResponseWriter)
 }
 

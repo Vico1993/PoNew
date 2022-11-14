@@ -9,6 +9,7 @@ import (
 )
 
 func PostNotification(res http.ResponseWriter, req *http.Request) {
+	res.Header().Set("Content-Type", "application/json")
 	notifType := mux.Vars(req)["type"]
 
 	if notifType == "" {
@@ -17,13 +18,17 @@ func PostNotification(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	processed := false
 	for _, notif := range notification.NotificationList {
 		if notif.GetType() == notifType {
 			notif.Process(req, res)
+			processed = true
 			break
 		}
 	}
 
-	// Default
-	myUtil.SendError(res, myUtil.NewValidationError("Couldn't process your request, type not recognized"))
+	if !processed {
+		// Default
+		myUtil.SendError(res, myUtil.NewValidationError("Couldn't process your request, type not recognized"))
+	}
 }
