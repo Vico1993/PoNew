@@ -6,6 +6,7 @@ import (
 )
 
 // Format and Send JSON error
+// TODO: Find a way to properly test this method. With http package be able to assert the http call?
 func SendError(res http.ResponseWriter, err *HttpError) {
 	res.Header().Set("Content-Type", "application/json; charset=utf-8")
 	res.Header().Set("X-Content-Type-Options", "nosniff")
