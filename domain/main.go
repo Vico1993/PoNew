@@ -11,6 +11,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	url  = "127.0.0.1"
+	port = "8000"
+)
+
 func main() {
 	// Init our notification system
 	notification.InitNotification()
@@ -26,12 +31,16 @@ func main() {
 	// Check header middleware
 	// router.Use(middleware.CheckRequest)
 
+	fmt.Println("Start running your services on PORT: " + port)
+
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         "127.0.0.1:8000",
+		Addr:         url + ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+
+	fmt.Println("Your services is running on " + url + ":" + port)
 
 	log.Fatal(srv.ListenAndServe())
 }
